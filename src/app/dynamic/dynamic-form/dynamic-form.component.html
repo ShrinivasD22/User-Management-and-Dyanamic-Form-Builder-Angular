@@ -1,0 +1,77 @@
+<div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+  <mat-card style="padding: 20px; margin: 10px; width: 40%;">
+    <h2 style="text-align: center;">Dynamic Form Builder</h2>
+
+    <mat-form-field appearance="fill" style="width: 100%; margin-bottom: 10px;">
+      <mat-label>Field Type</mat-label>
+      <mat-select [(value)]="selectedFieldType" (selectionChange)="addField(selectedFieldType)">
+        <mat-option *ngFor="let type of fieldTypes" [value]="type.value">{{ type.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div *ngFor="let field of fields; let i = index" style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
+      <h4>Field {{ i + 1 }}</h4>
+
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label>Label</mat-label>
+        <input matInput [(ngModel)]="field.label" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label>Placeholder</mat-label>
+        <input matInput [(ngModel)]="field.placeholder" />
+      </mat-form-field>
+
+      <div style="margin-bottom: 10px;">
+        <label>Validation:</label>
+        <mat-checkbox [(ngModel)]="field.validation[0]">Required</mat-checkbox>
+      </div>
+
+      <button mat-button color="warn" (click)="removeField(i)">Remove Field</button>
+    </div>
+
+    <!-- Uncomment this button for form submission -->
+    <!-- <button mat-raised-button color="primary" (click)="submit()" style="margin-top: 20px;">Submit Form</button> -->
+  </mat-card>
+
+  <mat-card style="padding: 20px; margin: 10px; width: 40%;">
+    <h3>Generated Form</h3>
+    <form [formGroup]="form">
+      <ng-container *ngFor="let field of fields">
+        <ng-container [ngSwitch]="field.type">
+          <mat-form-field *ngSwitchCase="'text'" appearance="fill" style="width: 100%; margin-bottom: 10px;">
+            <mat-label>{{ field.label }}</mat-label>
+            <input matInput [placeholder]="field.placeholder" [formControlName]="field.label" />
+          </mat-form-field>
+
+          <mat-form-field *ngSwitchCase="'textarea'" appearance="fill" style="width: 100%; margin-bottom: 10px;">
+            <mat-label>{{ field.label }}</mat-label>
+            <textarea matInput [placeholder]="field.placeholder" [formControlName]="field.label"></textarea>
+          </mat-form-field>
+
+          <mat-form-field *ngSwitchCase="'select'" appearance="fill" style="width: 100%; margin-bottom: 10px;">
+            <mat-label>{{ field.label }}</mat-label>
+            <mat-select [formControlName]="field.label">
+              <mat-option *ngFor="let option of field.options" [value]="option">{{ option }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div *ngSwitchCase="'checkbox'" style="margin-bottom: 10px;">
+            <mat-checkbox [formControlName]="field.label">{{ field.label }}</mat-checkbox>
+          </div>
+
+          <div *ngSwitchCase="'radio'" style="margin-bottom: 10px;">
+            <mat-label>{{ field.label }}</mat-label>
+            <mat-radio-group [formControlName]="field.label">
+              <div style="display: flex; flex-direction: column;">
+                <mat-radio-button *ngFor="let option of field.options" [value]="option" style="margin-bottom: 5px;">
+                  {{ option }}
+                </mat-radio-button>
+              </div>
+            </mat-radio-group>
+          </div>
+        </ng-container>
+      </ng-container>
+    </form>
+  </mat-card>
+</div>
